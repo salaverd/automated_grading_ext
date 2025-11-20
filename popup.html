@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <style>
         body {
-            font-family: Arial;
+            font-family: Arial, sans-serif;
             width: 220px;
             padding: 12px;
         }
@@ -15,6 +15,12 @@
             margin: 6px;
             padding: 8px;
         }
+
+        .note {
+            font-size: 11px;
+            color: #666;
+            margin-top: 8px;
+        }
     </style>
 </head>
 
@@ -23,9 +29,16 @@
         <button id="start">Start</button>
         <button id="stop">Stop</button>
     </div>
+
     <div style="margin-top:10px;">
         <label><input id="autoNext" type="checkbox" checked /> Auto Next</label>
     </div>
+
+    <div class="note">
+        Click Start while on the grading page (you must be logged in). The extension will be injected only to the active
+        tab if its URL matches.
+    </div>
+
     <script src="popup.js"></script>
 </body>
 
