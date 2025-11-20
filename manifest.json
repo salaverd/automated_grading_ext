@@ -1,0 +1,34 @@
+{
+    "manifest_version": 3,
+    "name": "Automated Grading Extension",
+    "version": "0.1.0",
+    "description": "Chrome Extension for 'Error Types' Exercise",
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "Student Grader"
+    },
+    "permissions": [
+        "activeTab",
+        "scripting",
+        "storage"
+    ],
+    "host_permissions": [
+        "https://codepen.io/*",
+        "https://*.codepen.io/*",
+        "https://activities.am.tumo.world/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "https://activities.am.tumo.world/dashboard/activities/*"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ]
+}
