@@ -1,8 +1,3 @@
-// - Receives {action: 'start', autoNext} or {action: 'stop'} from the popup.
-// - Validates the active tab URL and injects content.js only into the tab that matches the grading page.
-// - Then sends a message { cmd: 'start', autoNext } to the injected content script.
-// - On stop, sends { cmd: 'stop' }.
-
 const TARGET_ORIGIN = "https://activities.am.tumo.world";
 const TARGET_PATH_PREFIX = "";
 
