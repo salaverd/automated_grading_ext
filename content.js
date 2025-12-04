@@ -9,7 +9,7 @@ const REJECT_BUTTON_SELECTOR = "button.examiner-component-feedback-status-button
 const NEXT_BUTTON_SELECTOR = "button.examiner-next-button.v-btn.v-btn--has-bg.theme--light.v-size--large.examiner-tab-stop";
 const REJECT_LIST_SELECTOR = "div.v-item-group.theme--light.v-list-item-group"
 // ------- TODO check if this class is correct
-const ACTIVITY_COMPONENT_SELECOR = "div.examiner-activity-components"; 
+const ACTIVITY_COMPONENT_SELECOR = "div.examiner-activity-container-components-wrapper"; 
 
 function bySelectorOrText(selectorStr, root = document) {
     const parts = selectorStr.split(',').map(p => p.trim());
@@ -132,17 +132,17 @@ let isProcessing = false;
 
 // --------- TODO - check this function ------------
 function getRejectListItems() {
-    // Find the activity component container
     const root = document.querySelector(ACTIVITY_COMPONENT_SELECOR);
     if (!root) return [];
 
-    // Find the reject list inside that container
     const container = root.querySelector(REJECT_LIST_SELECTOR);
     if (!container) return [];
 
-    // Now fetch all list items (adjust the selectors if needed)
-    return Array.from(container.querySelectorAll('.v-list-item, .v-item, .v-list-item__content'))
-        || Array.from(container.children);
+    // let arr = Array.from(container.querySelectorAll('.v-list-item, .v-item, .v-list-item__content'))
+    //     || Array.from(container.children);
+
+    return Array.from(container.querySelectorAll("input[type='checkbox'], [role='checkbox']"));
+
 }
 
 async function processCurrentStudent(autoNext) {
@@ -225,6 +225,7 @@ async function processCurrentStudent(autoNext) {
 
                         const items = getRejectListItems();
                         console.log("items:", items);
+                        items[2].click();
                         // const container = bySelectorOrTextAll(REJECT_LIST_SELECTOR, ACTIVITY_COMPONENT_SELECOR);
                         // if (!container) return console.warn("Reject list not found");
                         // console.log("CONTAINER: ", container);
