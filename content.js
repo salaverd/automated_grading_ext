@@ -198,25 +198,25 @@ async function processCurrentStudent(autoNext) {
 
             // // choose up to 3 relevant pens
             // const pens = anchors.slice(0, 3).map(a => a.href);
-            const pens = ["https://codepen.io/Sima-Alaverdyan-the-animator/pen/yyOWRvX?editors=0010", 
-                "https://codepen.io/Armen-Aghayan/pen/PwNaJzM?editors=0011", 
-                "https://codepen.io/Sima-Alaverdyan-the-animator/pen/WbwBaMG?editors=0010"];
+            // const pens = ["https://codepen.io/Sima-Alaverdyan-the-animator/pen/yyOWRvX?editors=0010", 
+            //     "https://codepen.io/Armen-Aghayan/pen/PwNaJzM?editors=0011", 
+            //     "https://codepen.io/Sima-Alaverdyan-the-animator/pen/WbwBaMG?editors=0010"];
             // console.log('Grader found CodePen links:', pens);
 
             // const div = studentRoot.querySelector(LINK_SELECTOR);
             // const divs = bySelectorOrTextAll(studentRoot, LINK_SELECTOR);
 
-            // let pens = [];
-            // const divs = studentRoot.querySelectorAll(LINK_SELECTOR);
+            let pens = [];
+            const divs = studentRoot.querySelectorAll(LINK_SELECTOR);
 
-            // if (!divs) {
-            //     console.warn("Div not found");
-            //     return;
-            // }
-            // divs.forEach(div => {
-            //     const text = div.textContent.trim();
-            //     pens.push(text);
-            // });
+            if (!divs) {
+                console.warn("Div not found");
+                return;
+            }
+            divs.forEach(div => {
+                const text = div.textContent.trim();
+                pens.push(text);
+            });
 
             let anyFail = false;
             const details = [];
@@ -301,6 +301,9 @@ async function processCurrentStudent(autoNext) {
                                     data: value,
                                     inputType: "insertText"
                                 }));
+                                document.body.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
+                                document.body.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
+                                document.body.dispatchEvent(new MouseEvent("click", { bubbles: true }));
                             }
                         }
                         else {
