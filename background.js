@@ -40,13 +40,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
             return true;
         }
 
-        // if (msg.cmd === 'fetchPen') {
-        //     fetch(msg.url)
-        //         .then(resp => resp.text())
-        //         .then(html => sendResponse({ html }))
-        //         .catch(err => sendResponse({ error: err.message }));
-        //     return true;
-        // }
         if (msg.cmd === 'fetchPen' && msg.url) {
             try {
                 const resp = await fetch(msg.url, { credentials: 'omit' }); // or 'include' if you want cookies
@@ -68,6 +61,5 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         sendResponse({ ok: false, reason: 'unknown action' });
     })();
 
-    // return false;
     return true;
 });

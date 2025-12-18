@@ -9,7 +9,6 @@ const REJECT_BUTTON_SELECTOR = "button.examiner-component-feedback-status-button
 // const NEXT_BUTTON_SELECTOR = "button.examiner-next-and-save-button.v-btn v-btn--text.theme--light.v-size--large";
 const NEXT_BUTTON_SELECTOR = "button.examiner-next-button.v-btn.v-btn--has-bg.theme--light.v-size--large.examiner-tab-stop";
 const REJECT_LIST_SELECTOR = "div.v-item-group.theme--light.v-list-item-group";
-// ------- TODO check if this class is correct
 const ACTIVITY_COMPONENT_SELECOR = "div.examiner-activity-container-components-wrapper";
 const FINAL_FEEDBACK_SELECTOR = "div.v-select__slot";
 
@@ -132,22 +131,14 @@ function extractJs(htmlString) {
 let stopRequested = false;
 let isProcessing = false;
 
-// --------- TODO - check this function ------------
-// function getListItems(root = document.querySelector(ACTIVITY_COMPONENT_SELECOR)) {
 function getListItems(root) {
-    // const root = document.querySelector(ACTIVITY_COMPONENT_SELECOR);
     if (!root) return [];
 
-    // const container = root.querySelector(REJECT_LIST_SELECTOR);
     const container = root;
     console.log("container inside getListItems: ", container);
 
     if (!container) return [];
 
-    // let arr = Array.from(container.querySelectorAll('.v-list-item, .v-item, .v-list-item__content'))
-    //     || Array.from(container.children);
-
-    // return Array.from(container.querySelectorAll("input[type='checkbox'], [role='checkbox']"));
     return Array.from(container.querySelectorAll("input[type='checkbox'], [role='checkbox'], input[type='radio'], [role='radio']"
     ));
 
@@ -177,34 +168,6 @@ async function processCurrentStudent(autoNext) {
             const examinationRoot = document.querySelector(ACTIVITY_COMPONENT_SELECOR) || document;
             const rejectEl = bySelectorOrTextAll(REJECT_BUTTON_SELECTOR);
             const awardEl = bySelectorOrTextAll(AWARD_BUTTON_SELECTOR);
-
-            // ---- here -----
-            // const groups = Array.from(examinationRoot.querySelectorAll('.v-item-group.theme--light.v-list-item-group'));
-            // const desiredGroup = groups[0];
-
-            // console.log("groups[0] = ", groups[0]);
-
-            // const items = getListItems(desiredGroup);
-            // console.log(items);
-            // items[1].click();
-            // --------
-
-            // // gather codepen anchors inside studentRoot
-            // const anchors = Array.from(studentRoot.querySelectorAll(CODEPEN_LINK_SELECTOR));
-            // if (!anchors.length) {
-            //     console.warn('No CodePen links found in student container. Check STUDENT_CONTAINER_SELECTOR and CODEPEN_LINK_SELECTOR.');
-            //     break;
-            // }
-
-            // // choose up to 3 relevant pens
-            // const pens = anchors.slice(0, 3).map(a => a.href);
-            // const pens = ["https://codepen.io/Sima-Alaverdyan-the-animator/pen/yyOWRvX?editors=0010", 
-            //     "https://codepen.io/Armen-Aghayan/pen/PwNaJzM?editors=0011", 
-            //     "https://codepen.io/Sima-Alaverdyan-the-animator/pen/WbwBaMG?editors=0010"];
-            // console.log('Grader found CodePen links:', pens);
-
-            // const div = studentRoot.querySelector(LINK_SELECTOR);
-            // const divs = bySelectorOrTextAll(studentRoot, LINK_SELECTOR);
 
             let pens = [];
             const divs = studentRoot.querySelectorAll(LINK_SELECTOR);
@@ -274,11 +237,6 @@ async function processCurrentStudent(autoNext) {
                     details.push(result.error);
 
                     if (result.valid) {
-                        // const groups = Array.from(examinationRoot.querySelectorAll('.v-item-group.theme--light.v-list-item-group'));
-                        // const desiredGroup = groups[i];
-                        // const items = getListItems(desiredGroup);
-                        // console.log("VALID LIST: ", items);
-
                         console.log("Syntax is correct!");
                         if (awardEl[i]) {
                             awardEl[i].click();
@@ -372,14 +330,8 @@ async function processCurrentStudent(autoNext) {
                 inputType: "insertText"
             }));
 
-            // document.body.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }));
-            // document.body.dispatchEvent(new MouseEvent("mouseup", { bubbles: true }));
-            // document.body.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-
             if (anyFail) {
-                // Marking the whole exercise as failed.
                 rejectEl[3].click();
-
             }
 
             if (!autoNext) {
