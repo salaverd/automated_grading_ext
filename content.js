@@ -12,6 +12,78 @@ const REJECT_LIST_SELECTOR = "div.v-item-group.theme--light.v-list-item-group";
 const ACTIVITY_COMPONENT_SELECOR = "div.examiner-activity-container-components-wrapper";
 const FINAL_FEEDBACK_SELECTOR = "div.v-select__slot";
 
+let firstRef = `
+let colors = ["#52BE80","#D35400","#229954","#76448A","#C0392B"]
+
+for(let i = 0; i<colors.length; i++){
+    drawFl(colors[i],100,-115,184)
+    drawFl(colors[i],200,150,-192)
+}
+
+function drawFl(clr,starLine, x, y){
+  color (clr)    
+  goto(x,y)
+  for(let j = starLine; j>0; j-=5){
+    goto(x,y)
+    forward(j)
+    left(5)
+  }
+}`
+
+let secondRef = `
+let colors = ["#F1C40F","#E74C3C"]
+let x = -240
+let y =  216
+let side = 60
+let size = 100
+
+width(4)
+for(let j = 0; j<10; j++){
+  for(let i = 0; i<2; i++){
+    randomColor_h()
+    drawTriangle(x,y,side)
+    left(18)
+  }
+  x+=50
+  y-=60
+}
+
+
+function drawTriangle(x,y,side,clr=undefined){
+  goto(x,y)
+  
+  if(clr!==undefined){
+    mcolor(clr)  
+  }
+  
+  for(var i = 0; i < 3; i++){
+    forward(side)
+    left(120)
+  }
+}`
+
+let thirdRef = `
+let startLM =  500
+
+goto(-230,-246)
+right(90)
+sierp(startLM)
+
+
+function sierp(len){
+  if(len>10){
+    randomColor_h()
+    for(let i=0;i<3;i++){
+      sierp(len/2)
+      forward(len)
+      left(120)
+    }
+  }
+}`
+
+let refs = []
+refs.push(firstRef, secondRef, thirdRef);
+
 function bySelectorOrText(selectorStr, root = document) {
     const parts = selectorStr.split(',').map(p => p.trim());
     for (const part of parts) {
@@ -50,7 +122,6 @@ function bySelectorOrTextAll(selectorStr, root = document) {
             results.push(...root.querySelectorAll(part));
         }
     }
-    // console.log("RESULTS: ", results);
 
     return results;
 }
@@ -79,13 +150,9 @@ function checkSyntax(code) {
 function checkSyntaxWithAcorn(code) {
     try {
         acorn.parse(code, { ecmaVersion: "latest", sourceType: "script", locations: true });
-        return { valid: true, error: null, loc: null };
+        return true;
     } catch (err) {
-        return {
-            valid: false,
-            error: err.message,
-            loc: err.loc || null
-        };
+        return false;
     }
 }
 
@@ -135,7 +202,6 @@ function getListItems(root) {
     if (!root) return [];
 
     const container = root;
-    console.log("container inside getListItems: ", container);
 
     if (!container) return [];
 
@@ -151,6 +217,20 @@ function isCodePenUrl(url) {
     } catch (e) {
         return false;
     }
+}
+
+function codeFormatting(code) {
+    // return code.replace(/\s+/g, "");
+    return code
+        .replace(/\s+/g, "")
+        .replace(/;/g, "");
+}
+
+function compareScripts(refCode, studentCode) {
+    const formatedRef = codeFormatting(refCode);
+    const formatedStd = codeFormatting(studentCode);
+
+    return formatedRef === formatedStd;
 }
 
 async function processCurrentStudent(autoNext) {
@@ -180,19 +260,23 @@ async function processCurrentStudent(autoNext) {
                 const text = div.textContent.trim();
                 pens.push(text);
             });
+            // const pens = ["https://codepen.io/Sima-Alaverdyan-the-animator/pen/yyOWRvX?editors=0010",
+            //     "https://codepen.io/Sima-Alaverdyan-the-animator/pen/ogLvJXK?editors=0011",
+            //     "https://codepen.io/Sima-Alaverdyan-the-animator/pen/wBWwRKJ?editors=1111"];
 
             let anyFail = false;
             const details = [];
             // const failedIndexes = [];
             // i is for tracking each exercise 
             let i = 0;
-            // rejectIndx is for choosing reject reason from the list.
-            // default is 1
-            let rejectIndx = 1;
             const groups = Array.from(examinationRoot.querySelectorAll('.v-item-group.theme--light.v-list-item-group'));
 
             for (const penUrl of pens) {
                 if (stopRequested) break;
+
+                // rejectIndx is for choosing reject reason from the list. default is 1
+                let rejectIndx = 1;
+
                 console.log('Fetching pen:', penUrl);
                 if (!isCodePenUrl(penUrl)) {
                     anyFail = true;
@@ -201,10 +285,7 @@ async function processCurrentStudent(autoNext) {
                     // continue;
                     if (rejectEl[i]) {
                         rejectEl[i].click();
-                        // details.push(result.error);
                         console.log('Marking REJECT for this student. Details:', details);
-                        // console.log("Syntax error:", result.error, "at", result.loc);
-                        // let index = 2;
                         await new Promise(r => setTimeout(r, 1000));
 
                         // const groups = Array.from(examinationRoot.querySelectorAll('.v-item-group.theme--light.v-list-item-group'));
@@ -228,16 +309,17 @@ async function processCurrentStudent(autoNext) {
                     let js;
                     if (resp && resp.html) {
                         js = extractJs(resp.html);
-                        // console.log('Extracted JS:\n', js);
+                        console.log('Extracted JS:\n', js);
                     } else {
                         console.warn('No HTML returned from background fetch', resp);
                     }
 
-                    const result = checkSyntaxWithAcorn(js);
-                    details.push(result.error);
+                    let result = checkSyntaxWithAcorn(js);
+                    
+                    let cmpRes = compareScripts(refs[i], js)
+                    console.log('js: ' + js + '\n' + 'RESULT: ' + result, 'cmpRes: ' + cmpRes);
 
-                    if (result.valid) {
-                        console.log("Syntax is correct!");
+                    if (result && cmpRes) {
                         if (awardEl[i]) {
                             awardEl[i].click();
                             await new Promise(r => setTimeout(r, 500));
@@ -271,19 +353,16 @@ async function processCurrentStudent(autoNext) {
                         anyFail = true;
                         if (rejectEl[i]) {
                             rejectEl[i].click();
-                            // details.push(result.error);
-                            console.log('Marking REJECT for this student. Details:', details, "at ", result.loc);
-                            // console.log("Syntax error:", result.error, "at", result.loc);
-                            // let index = 2;
                             await new Promise(r => setTimeout(r, 1000));
 
                             // const groups = Array.from(examinationRoot.querySelectorAll('.v-item-group.theme--light.v-list-item-group'));
                             const desiredGroup = groups[i];
-
-                            // console.log(`groups[${i}] = `, i, groups[i]);
+                            if (result && !cmpRes) {
+                                rejectIndx = 2;
+                            }
 
                             const items = getListItems(desiredGroup);
-                            // console.log(items);
+                            
                             if (!items[rejectIndx].checked) {
                                 items[rejectIndx].click();
                             }
